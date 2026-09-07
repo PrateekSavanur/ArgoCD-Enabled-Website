@@ -1,0 +1,162 @@
+---
+title: "Terraform + Proxmox: Provision VMs Like a Pro"
+date: "2025-03-20"
+description: "How to use Terraform with the Proxmox provider to provision VMs and LXC containers with cloud-init, templating, and full IaC workflow."
+tags: ["terraform", "proxmox", "devops", "iac"]
+published: true
+---
+
+# Terraform + Proxmox: Provision VMs Like a Pro
+
+Stop clicking in the GUI. Here's how to provision Proxmox VMs with Terraform.
+
+## Why Terraform for Proxmox?
+
+- **Reproducibility** — define infrastructure as code
+- **Version control** — `git blame` your homelab
+- **Automation** — combine with Ansible for full provisioning pipelines
+
+## Setup
+
+### 1. Create a Proxmox API Token
+
+In the Proxmox web UI:
+1. Datacenter → Permissions → API Tokens
+2. Create token for user `root@pam` (or a dedicated user)
+3. **Disable** "Privilege Separation" for full access
+
+### 2. Configure the Provider
+
+```hcl
+# providers.tf
+terraform {
+  required_providers {
+    proxmox = {
+      source  = "telmate/proxmox"
+      version = "~> 2.9"
+    }
+  }
+}
+
+provider "proxmox" {
+  pm_api_url          = var.proxmox_url
+  pm_api_token_id     = var.proxmox_token_id
+  pm_api_token_secret = var.proxmox_token_secret
+  pm_tls_insecure     = true  # only for self-signed certs
+}
+```
+
+```hcl
+# variables.tf
+variable "proxmox_url" {
+  type    = string
+  default = "https://192.168.1.10:8006/api2/json"
+}
+
+variable "proxmox_token_id" {
+  type      = string
+  sensitive = true
+}
+
+variable "proxmox_token_secret" {
+  type      = string
+  sensitive = true
+}
+```
+
+### 3. Create a Cloud-Init Template
+
+First, on your Proxmox host:
+
+```bash
+# Download Ubuntu 22.04 cloud image
+wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+
+# Create a VM template
+qm create 9000 --name ubuntu-cloud-init --memory 2048 --net0 virtio,bridge=vmbr0
+qm importdisk 9000 jammy-server-cloudimg-amd64.img local-lvm
+qm set 9000 --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-9000-disk-0
+qm set 9000 --boot c --bootdisk scsi0
+qm set 9000 --ide2 local-lvm:cloudinit
+qm set 9000 --serial0 socket --vga serial0
+qm template 9000
+```
+
+### 4. Provision VMs with Terraform
+
+```hcl
+# main.tf
+resource "proxmox_vm_qemu" "k3s_node" {
+  count       = 3
+  name        = "k3s-node-0${count.index + 1}"
+  target_node = "pve-01"
+  clone       = "ubuntu-cloud-init"
+  
+  cores   = 4
+  memory  = 8192
+  sockets = 1
+
+  disk {
+    slot    = 0
+    size    = "50G"
+    type    = "scsi"
+    storage = "local-lvm"
+  }
+
+  network {
+    model  = "virtio"
+    bridge = "vmbr0"
+  }
+
+  # Cloud-init config
+  os_type    = "cloud-init"
+  ipconfig0  = "ip=192.168.1.${110 + count.index}/24,gw=192.168.1.1"
+  nameserver = "1.1.1.1"
+  ciuser     = "prateek"
+  sshkeys    = file("~/.ssh/id_ed25519.pub")
+}
+```
+
+### 5. Apply
+
+```bash
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+## After Provisioning: Ansible Bootstrap
+
+I pair Terraform with Ansible to install packages and configure the OS:
+
+```yaml
+# playbook.yml
+- hosts: k3s_nodes
+  become: true
+  roles:
+    - common
+    - k3s
+    - monitoring_agent
+```
+
+The full setup is in my [ansible-homelab-bootstrap](https://github.com/prateek/ansible-homelab-bootstrap) repo.
+
+## Full Module
+
+I've packaged this into a reusable Terraform module at [proxmox-terraform-modules](https://github.com/prateek/proxmox-terraform-modules):
+
+```hcl
+module "k3s_cluster" {
+  source = "github.com/prateek/proxmox-terraform-modules//modules/k3s-cluster"
+  
+  node_count     = 3
+  node_cpu       = 4
+  node_memory    = 8192
+  proxmox_node   = "pve-01"
+  ssh_public_key = file("~/.ssh/id_ed25519.pub")
+}
+```
+
+---
+
+*Detailed video walkthrough on [YouTube @TheTerminalGuyX](https://youtube.com/@TheTerminalGuyX).*

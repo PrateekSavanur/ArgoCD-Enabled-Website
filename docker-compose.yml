@@ -1,0 +1,34 @@
+services:
+  portfolio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://yourdomain.com}
+        NEXT_PUBLIC_AUTHOR_NAME: ${NEXT_PUBLIC_AUTHOR_NAME:-Prateek Prasanna Savan}
+        NEXT_PUBLIC_AUTHOR_HANDLE: ${NEXT_PUBLIC_AUTHOR_HANDLE:-TheTerminalGuyX}
+        NEXT_PUBLIC_GITHUB_URL: ${NEXT_PUBLIC_GITHUB_URL:-https://github.com/prateek}
+        NEXT_PUBLIC_LINKEDIN_URL: ${NEXT_PUBLIC_LINKEDIN_URL:-https://linkedin.com/in/prateek}
+        NEXT_PUBLIC_YOUTUBE_URL: ${NEXT_PUBLIC_YOUTUBE_URL:-https://youtube.com/@TheTerminalGuyX}
+        NEXT_PUBLIC_SITE_DESCRIPTION: ${NEXT_PUBLIC_SITE_DESCRIPTION:-DevOps engineer and content creator.}
+    image: prateek-portfolio:latest
+    container_name: portfolio
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    labels:
+      # Traefik labels — remove if not using Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.portfolio.rule=Host(`${NEXT_PUBLIC_SITE_URL:-yourdomain.com}`)"
+      - "traefik.http.routers.portfolio.entrypoints=websecure"
+      - "traefik.http.routers.portfolio.tls.certresolver=cloudflare"
+      - "traefik.http.services.portfolio.loadbalancer.server.port=3000"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
+    name: traefik-web

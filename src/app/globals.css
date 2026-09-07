@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Variables ─────────────────────────────────────── */
+:root {
+  /* Terminal mode (default) */
+  --bg: #0a0a0a;
+  --bg-surface: #111111;
+  --bg-card: #0f0f0f;
+  --border: #1f3a1f;
+  --text-primary: #00ff41;
+  --text-secondary: #00b32d;
+  --text-muted: #4a7a4a;
+  --text-dim: #2a4a2a;
+  --accent: #ffb000;
+  --accent-dim: #8a6000;
+  --text-body: #c8ffc8;
+  --font-primary: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-secondary: 'JetBrains Mono', monospace;
+  --radius: 0;
+  --shadow: none;
+  --nav-bg: #0a0a0a;
+  --nav-border: #1f3a1f;
+}
+
+.classic-mode {
+  --bg: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #1e293b;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --accent: #6366f1;
+  --accent-dim: #8b5cf6;
+  --text-body: #334155;
+  --font-primary: 'Inter', 'Plus Jakarta Sans', sans-serif;
+  --font-secondary: 'Plus Jakarta Sans', sans-serif;
+  --radius: 0.75rem;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  --nav-bg: rgba(255,255,255,0.9);
+  --nav-border: #e2e8f0;
+}
+
+/* ─── Base Styles ────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* ─── Terminal Scanline Overlay ─────────────────────────── */
+.terminal-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 65, 0.015) 2px,
+    rgba(0, 255, 65, 0.015) 4px
+  );
+}
+
+.classic-mode .terminal-scanlines {
+  display: none;
+}
+
+/* ─── Terminal Glow ─────────────────────────────────────── */
+.terminal-glow {
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 20px rgba(0, 255, 65, 0.2);
+}
+
+.classic-mode .terminal-glow {
+  text-shadow: none;
+}
+
+.amber-glow {
+  text-shadow: 0 0 10px rgba(255, 176, 0, 0.5);
+}
+
+.classic-mode .amber-glow {
+  text-shadow: none;
+}
+
+/* ─── Cursor Blink ──────────────────────────────────────── */
+.cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  background-color: var(--text-primary);
+  vertical-align: text-bottom;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ─── Terminal Box Drawing ──────────────────────────────── */
+.terminal-box {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+}
+
+.classic-mode .terminal-box {
+  box-shadow: var(--shadow);
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ─── Code Blocks (Shiki) ────────────────────────────────── */
+pre {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+pre code {
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.shiki {
+  padding: 1.5rem;
+  background: var(--bg-card) !important;
+}
+
+/* ─── Prose (MDX) ────────────────────────────────────────── */
+.prose-terminal {
+  color: var(--text-body);
+  font-family: var(--font-primary);
+  line-height: 1.8;
+}
+
+.prose-terminal h1,
+.prose-terminal h2,
+.prose-terminal h3,
+.prose-terminal h4 {
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-weight: 700;
+}
+
+.prose-terminal h2::before {
+  content: '## ';
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+.prose-terminal h3::before {
+  content: '### ';
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+.classic-mode .prose-terminal h2::before,
+.classic-mode .prose-terminal h3::before {
+  display: none;
+}
+
+.prose-terminal a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-terminal blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 1rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.prose-terminal code {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.1em 0.4em;
+  border-radius: 2px;
+  font-size: 0.875em;
+  color: var(--accent);
+}
+
+.prose-terminal pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+.prose-terminal ul {
+  list-style: none;
+  padding-left: 1rem;
+}
+
+.prose-terminal ul li::before {
+  content: '▸ ';
+  color: var(--accent);
+  margin-right: 0.25rem;
+}
+
+.classic-mode .prose-terminal ul li::before {
+  content: '• ';
+  color: var(--accent);
+}
+
+/* ─── Boot Screen ────────────────────────────────────────── */
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  background: #000000;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── Utility ────────────────────────────────────────────── */
+.prompt-prefix {
+  color: var(--accent);
+  user-select: none;
+}
+
+.terminal-mode .prompt-prefix {
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.4);
+}
+
+@layer utilities {
+  .text-terminal-green { color: #00ff41; }
+  .text-terminal-amber { color: #ffb000; }
+  .bg-terminal { background-color: #0a0a0a; }
+  .border-terminal { border-color: #1f3a1f; }
+}

@@ -1,0 +1,131 @@
+---
+title: "Arch Linux + Hyprland: My Complete Setup Guide"
+date: "2025-04-15"
+description: "A complete guide to my Arch Linux + Hyprland daily driver setup with Waybar, Rofi, Kitty, and Neovim. Dotfiles included."
+tags: ["linux", "hyprland", "arch", "ricing"]
+published: true
+---
+
+# Arch Linux + Hyprland: My Daily Driver Setup
+
+I've been daily driving Arch Linux + Hyprland for over two years. Here's the complete setup guide — from base install to a fully configured desktop.
+
+## Why Hyprland?
+
+Hyprland is a dynamic tiling Wayland compositor. Compared to i3/Sway:
+
+- **Animations** — buttery smooth window transitions out of the box
+- **Blur and gaps** — proper compositor effects
+- **Active development** — the community moves fast
+- **Performance** — lower latency than X11 for my workflow
+
+## Base Install
+
+I assume you have a fresh Arch install. If not, follow the [ArchWiki](https://wiki.archlinux.org/title/Installation_guide).
+
+```bash
+# Install Hyprland and essential packages
+pacman -S hyprland waybar rofi-wayland kitty \
+  dunst swww wl-clipboard cliphist \
+  noto-fonts noto-fonts-emoji ttf-jetbrains-mono-nerd
+```
+
+## Hyprland Config
+
+My `~/.config/hypr/hyprland.conf`:
+
+```ini
+# Monitor config
+monitor=,preferred,auto,1
+
+# Aesthetic
+general {
+  gaps_in = 5
+  gaps_out = 10
+  border_size = 2
+  col.active_border = rgba(00ff41ee) rgba(ffb000ee) 45deg
+  col.inactive_border = rgba(1f3a1fff)
+}
+
+decoration {
+  rounding = 0
+  blur {
+    enabled = true
+    size = 5
+    passes = 3
+  }
+  drop_shadow = true
+  shadow_color = rgba(00ff4133)
+}
+
+animations {
+  enabled = true
+  bezier = myBezier, 0.05, 0.9, 0.1, 1.05
+  animation = windows, 1, 4, myBezier
+  animation = fade, 1, 7, default
+  animation = workspaces, 1, 4, default
+}
+```
+
+## Waybar
+
+I use Waybar for my status bar. Key modules:
+
+```json
+{
+  "modules-left": ["hyprland/workspaces"],
+  "modules-center": ["clock"],
+  "modules-right": ["cpu", "memory", "network", "pulseaudio", "tray"],
+  "clock": {
+    "format": "{:%H:%M}",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+  }
+}
+```
+
+## Neovim Setup
+
+I use **LazyVim** as my base config. Key plugins:
+
+| Plugin | Purpose |
+|--------|---------|
+| `telescope.nvim` | Fuzzy finding |
+| `nvim-tree` | File explorer |
+| `lualine.nvim` | Status line |
+| `nvim-cmp` | Completion |
+| `conform.nvim` | Auto-format |
+| `gitsigns.nvim` | Git integration |
+
+## Shell: Zsh + Powerlevel10k
+
+```bash
+# Install Oh My Zsh
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# Install Powerlevel10k
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+  ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+```
+
+Key plugins I use:
+- `zsh-autosuggestions`
+- `zsh-syntax-highlighting`
+- `zoxide` (smarter `cd`)
+- `fzf` integration
+
+## Dotfiles
+
+All my configs are on GitHub: [prateek/dotfiles](https://github.com/prateek/dotfiles)
+
+```bash
+# Bootstrap on a fresh machine
+git clone https://github.com/prateek/dotfiles ~/.dotfiles
+cd ~/.dotfiles
+./install.sh
+```
+
+The install script uses **GNU Stow** to symlink configs to the right places.
+
+---
+
+*Full video walkthrough on [YouTube @TheTerminalGuyX](https://youtube.com/@TheTerminalGuyX).*

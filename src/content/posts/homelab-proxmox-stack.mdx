@@ -1,0 +1,127 @@
+---
+title: "Self-hosting Everything on Proxmox: My Full Homelab Stack"
+date: "2025-05-01"
+description: "How I run 20+ services at home on a 3-node Proxmox cluster with k3s, ArgoCD, and TrueNAS — and why you should too."
+tags: ["homelab", "proxmox", "kubernetes", "self-hosting"]
+published: true
+---
+
+# Self-hosting Everything on Proxmox
+
+`prateek@homelab:~$ uptime`  
+`07:42:13 up 147 days, 3:21, 3 users, load average: 0.45, 0.51, 0.48`
+
+That uptime is real. My homelab has been running uninterrupted for nearly five months. Here's how it's built.
+
+## Why Self-Host?
+
+Three reasons:
+
+1. **Privacy** — your data stays on your hardware  
+2. **Learning** — production-grade skills, home-grade risk  
+3. **Cost** — $12/month in electricity vs $200+/month in SaaS subscriptions
+
+## The Hardware
+
+| Node | CPU | RAM | Role |
+|------|-----|-----|------|
+| pve-01 | i5-12600K | 64GB | Primary + k3s control |
+| pve-02 | i5-10500T | 32GB | k3s control + worker |
+| pve-03 | Celeron N5105 | 16GB | k3s worker (low power) |
+
+All three run **Proxmox VE 8.x** in a cluster. Shared storage comes from a separate TrueNAS Scale box (4x4TB ZFS RAIDZ1).
+
+## The Kubernetes Layer
+
+I run **k3s** instead of vanilla Kubernetes because:
+
+- Single binary, minimal overhead
+- Built-in Traefik, Flannel, and local-path provisioner
+- Easy to upgrade with `k3sup`
+
+```bash
+# Install k3s server
+curl -sfL https://get.k3s.io | sh -s - server \
+  --cluster-init \
+  --tls-san homelab.local \
+  --disable traefik
+```
+
+I disable the built-in Traefik and deploy my own with Helm for more control.
+
+## GitOps with ArgoCD
+
+Everything is declarative. ArgoCD watches my Git repo and syncs changes automatically.
+
+```yaml
+# argocd/app-of-apps.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-of-apps
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/prateek/homelab-gitops
+    targetRevision: main
+    path: apps
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
+
+## Services Running
+
+Here's a partial list of what I self-host:
+
+- **Nextcloud** — file storage & calendar
+- **Vaultwarden** — Bitwarden-compatible password manager
+- **Immich** — Google Photos replacement
+- **Jellyfin** — media server
+- **Gitea** — private Git hosting
+- **Uptime Kuma** — status monitoring
+- **Paperless-ngx** — document management
+- **Mealie** — recipe management
+- This very website
+
+## Networking
+
+All services are exposed through **Traefik** with automatic Let's Encrypt certs. I use **Cloudflare Tunnels** so zero ports are open on my router.
+
+```yaml
+# traefik/values.yaml
+providers:
+  kubernetesCRD:
+    enabled: true
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: prateek@example.com
+      storage: /data/acme.json
+      dnsChallenge:
+        provider: cloudflare
+```
+
+## Monitoring
+
+Grafana + Prometheus + Loki + Alertmanager. The full LGTM stack. I have dashboards for:
+
+- Node resource usage
+- k3s cluster health  
+- Per-pod metrics
+- Log aggregation across all services
+- Uptime tracking
+
+## What's Next
+
+- Replace k3s with Talos Linux for a fully immutable control plane
+- Add Ceph storage for true HA
+- Automate VM provisioning with Terraform (my [`proxmox-terraform-modules`](https://github.com/prateek/proxmox-terraform-modules))
+
+---
+
+*Got questions? Drop a comment on the [YouTube video](https://youtube.com/@TheTerminalGuyX) companion to this post.*
