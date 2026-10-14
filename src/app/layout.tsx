@@ -7,7 +7,7 @@ import { ScanlineOverlay } from '@/components/ScanlineOverlay'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://prateek.dev'
 const authorName = process.env.NEXT_PUBLIC_AUTHOR_NAME || 'Prateek Prasanna Savan'
-const siteDescription = process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'DevOps engineer and content creator.'
+const siteDescription = process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'DevOps engineer.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

@@ -26,7 +26,6 @@ const SKILLS = [
 const SOCIAL_LINKS = [
   { label: 'github',   handle: 'PrateekSavanur',               url: process.env.NEXT_PUBLIC_GITHUB_URL   || '#' },
   { label: 'linkedin', handle: 'prateek-savanur', url: process.env.NEXT_PUBLIC_LINKEDIN_URL || '#' },
-  { label: 'youtube',  handle: 'TheTerminalGuyX',        url: process.env.NEXT_PUBLIC_YOUTUBE_URL  || '#' },
 ]
 
 const HELP_TEXT = `
@@ -62,8 +61,8 @@ function runCommand(
       return {
         entries: [
           { type: 'output', text: 'Prateek Prasanna Savanur' },
-          { type: 'output', text: 'DevOps engineer. Content creator @TheTerminalGuyX.' },
-          { type: 'output', text: 'I automate everything, self-host the rest, and document both on YouTube.' },
+          { type: 'output', text: 'DevOps engineer.' },
+          { type: 'output', text: 'I automate everything and self-host the rest.' },
         ],
       }
 
@@ -200,7 +199,7 @@ function runCommand(
 const INTRO_ENTRIES: HistoryEntry[] = [
   { type: 'cmd',    text: 'whoami' },
   { type: 'output', text: 'Prateek Prasanna Savanur' },
-  { type: 'output', text: 'DevOps engineer. Content creator @TheTerminalGuyX.' },
+  { type: 'output', text: 'DevOps engineer.' },
   { type: 'blank' },
   { type: 'cmd',    text: 'ls skills/' },
   ...SKILLS.map((s): HistoryEntry => ({

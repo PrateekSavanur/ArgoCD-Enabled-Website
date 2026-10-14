@@ -19,7 +19,6 @@ const SKILLS = [
 const SOCIAL_LINKS = [
   { label: 'github', handle: 'PrateekSavanur', url: process.env.NEXT_PUBLIC_GITHUB_URL || '#', icon: '[gh]' },
   { label: 'linkedin', handle: 'prateek-savanur', url: process.env.NEXT_PUBLIC_LINKEDIN_URL || '#', icon: '[li]' },
-  { label: 'youtube', handle: 'TheTerminalGuyX', url: process.env.NEXT_PUBLIC_YOUTUBE_URL || '#', icon: '[yt]' },
 ]
 
 export default function HomePage() {
@@ -63,19 +62,10 @@ function ClassicHome() {
             Prateek Prasanna Savanur
           </h1>
           <p className="text-xl mb-3" style={{ color: 'var(--accent)', fontFamily: 'var(--font-primary)' }}>
-            DevOps Engineer & Content Creator
+            DevOps Engineer
           </p>
           <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-primary)' }}>
-            I automate everything, self-host the rest, and document both on{' '}
-            <a
-              href={process.env.NEXT_PUBLIC_YOUTUBE_URL || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--accent)' }}
-            >
-              YouTube @TheTerminalGuyX
-            </a>
-            .
+            I automate everything and self-host the rest.
           </p>
           <div className="flex gap-3 mt-5 flex-wrap">
             <a
@@ -95,15 +85,6 @@ function ClassicHome() {
               style={{ borderColor: 'var(--border)', color: 'var(--text-primary)' }}
             >
               LinkedIn
-            </a>
-            <a
-              href={process.env.NEXT_PUBLIC_YOUTUBE_URL || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors hover:bg-slate-50"
-              style={{ borderColor: 'var(--border)', color: 'var(--text-primary)' }}
-            >
-              YouTube
             </a>
           </div>
         </div>

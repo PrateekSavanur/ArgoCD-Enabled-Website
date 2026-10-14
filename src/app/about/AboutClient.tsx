@@ -5,7 +5,6 @@ import { TerminalWindow, PromptLine, TerminalDivider } from '@/components/Termin
 
 const GIT_LOG = [
   { hash: 'c1a8f67', msg: 'feat: built homelab on Proxmox', date: '2026' },
-  { hash: 'b7c2e45', msg: 'feat: launched TheTerminalGuyX YouTube channel', date: '2026' },
   { hash: 'a3f9d12', msg: 'feat: joined Eurofins ITWW as Intern and then DevOps Engineer', date: '2025' },
   // { hash: 'a3fyd12', msg: 'feat: joined Eurofins ITWW as Intern', date: '2025' },
   { hash: 'd4b3c89', msg: 'feat: migrated to Arch Linux + Hyprland daily driver', date: '2024' },
@@ -40,8 +39,7 @@ export function AboutClient() {
           </p>
           <p>
             Outside of work I run a <span style={{ color: 'var(--accent)' }}>homelab</span> on Proxmox,
-            contribute to open source, and document it all on{' '}
-            <span style={{ color: 'var(--accent)' }}>YouTube (@TheTerminalGuyX)</span>.
+            and contribute to open source.
           </p>
           <p>
             I use <span style={{ color: '#00ff41' }}>Arch Linux</span> with Hyprland as my daily
@@ -108,8 +106,7 @@ function ClassicAbout() {
             cloud-native infrastructure: Kubernetes clusters, CI/CD pipelines, and IaC with Terraform.
           </p>
           <p>
-            Outside of work I run a homelab on Proxmox, contribute to open source, and document it
-            all on <strong style={{ color: 'var(--accent)' }}>YouTube (@TheTerminalGuyX)</strong>.
+            Outside of work I run a homelab on Proxmox and contribute to open source.
           </p>
           <p>
             I use Arch Linux with Hyprland as my daily driver. Fast tools, minimal noise.
