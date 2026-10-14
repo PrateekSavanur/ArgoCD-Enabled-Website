@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: portfolio
-          image: prateeksavanur/portfolio:latest
+          image: prateeksavanur/portfolio:2759be4adf1fe569a122af9e484f6d195e8adf3d
           ports:
             - containerPort: 3000
           resources:
